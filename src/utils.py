@@ -10,7 +10,7 @@ import logging
 load_dotenv()
 
 # Настройка логирования
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def get_greeting(current_time: str) -> str:
@@ -150,11 +150,11 @@ def events_page(dataframe: pd.DataFrame, date_str: str, range_option: str = 'M')
             start_date = date.replace(month=1, day=1)
             end_date = date
         elif range_option == 'ALL':
-            start_date = pd.Timestamp.min
+            start_date = datetime(1970, 1, 1)  # Минимальная дата
             end_date = date
         else:
-            logging.error("Invalid range option provided.")
-            return json.dumps({"error": "Invalid range option."})
+            logging.error("Некорректный параметр диапазона.")
+            return json.dumps({"error": "Некорректный параметр диапазона."})
 
         # Фильтрация данных по дате
         filtered_data = dataframe[(dataframe['date'] >= start_date) & (dataframe['date'] <= end_date)]
@@ -169,8 +169,8 @@ def events_page(dataframe: pd.DataFrame, date_str: str, range_option: str = 'M')
         # Получение API_KEY из переменных окружения
         api_key = os.getenv("API_KEY")
         if not api_key:
-            logging.error("API_KEY not found in environment variables.")
-            return json.dumps({"error": "API_KEY not found."})
+            logging.error("API_KEY не найден в переменных окружения.")
+            return json.dumps({"error": "API_KEY не найден."})
 
         stock_prices = get_stock_prices(api_key)
 
@@ -187,5 +187,4 @@ def events_page(dataframe: pd.DataFrame, date_str: str, range_option: str = 'M')
     except Exception as e:
         logging.error(f"Ошибка в events_page: {e}")
         return json.dumps({"error": str(e)})
-
 
