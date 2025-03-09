@@ -1,30 +1,32 @@
-from services import analyze_cashback, investment_bank, simple_search, search_phone_numbers, search_person_transfers
 import pandas as pd
-from src.reports import spending_by_category, spending_by_weekday, spending_by_workday
+from datetime import datetime
+from src.reports import (
+    spending_by_category,
+    spending_by_weekday,
+    spending_by_workday,
+)
+
+def main():
+    # Загрузка данных из Excel
+    df = pd.read_excel("data/operations.xlsx")
+
+    # Текущая дата
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    # Отчет: Траты по категории
+    category_spending = spending_by_category(df, "Супермаркеты", today)
+    print("Траты по категории 'Супермаркеты':")
+    print(category_spending)
+
+    # Отчет: Траты по дням недели
+    weekday_spending = spending_by_weekday(df, today)
+    print("Средние траты по дням недели:")
+    print(weekday_spending)
+
+    # Отчет: Траты в рабочий/выходной день
+    workday_spending = spending_by_workday(df, today)
+    print("Средние траты в рабочий/выходной день:")
+    print(workday_spending)
+
 if __name__ == "__main__":
-    # Пример данных
-    transactions = [
-        {"Дата операции": "2023-10-01", "Категория": "Супермаркеты", "Кешбэк": 100, "Сумма операции": 1000, "Описание": "Покупка в магазине"},
-        {"Дата операции": "2023-10-02", "Категория": "Рестораны", "Кешбэк": 200, "Сумма операции": 2000, "Описание": "Ужин в ресторане"},
-    ]
-
-    # Пример использования сервисов
-    print(analyze_cashback(transactions, 2023, 10))
-    print(investment_bank("2023-10", transactions, 50))
-    print(simple_search("Супермаркеты", transactions))
-    print(search_phone_numbers(transactions))
-    print(search_person_transfers(transactions))
-
-if __name__ == "__main__":
-    # Пример данных
-    data = {
-        'date': pd.date_range(start='1/1/2022', periods=100, freq='D'),
-        'category': ['food'] * 50 + ['transport'] * 50,
-        'amount': [10] * 50 + [20] * 50
-    }
-    df = pd.DataFrame(data)
-
-    # Генерация отчетов
-    spending_by_category(df, 'food')
-    spending_by_weekday(df)
-    spending_by_workday(df)
+    main()
